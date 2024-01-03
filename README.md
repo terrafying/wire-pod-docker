@@ -1,8 +1,6 @@
-    $ sudo docker run -d --name=wire-pod \
-        -p 80:80 \
-        -p 8080:8080 \
-        -p 443:433 \
-        -p 8084:8084 \
-        --hostname=escapepod \
-        --restart=always \
-        spkuja/wire-pod
+# Wire-Pod Dockerfile
+
+Just made this to run wirepod on windows without having to use the windows installer and stuff
+
+- `docker build . -t wire-pod`
+- (Windows) `.\start-docker.bat`
