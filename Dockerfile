@@ -1,12 +1,12 @@
 FROM ubuntu:latest
 
-ENV TZ=Europe/London
+ENV TZ=America/New_York
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN apt-get update \
- && apt-get install -y sudo
- 
-RUN sudo apt-get -y install avahi-daemon
+ && apt-get install -y sudo avahi-daemon git \
+ && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN adduser --disabled-password --gecos '' wirepod
 RUN adduser wirepod sudo
@@ -14,17 +14,20 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 USER wirepod
 
-RUN sudo apt-get update && sudo apt-get install -y git
 RUN sudo mkdir /wire-pod
 RUN sudo chown -R wirepod:wirepod /wire-pod
 
-RUN cd /wire-pod
-RUN git clone https://github.com/kercre123/wire-pod/ wire-pod
+RUN git clone https://github.com/kercre123/wire-pod/ --depth=1 /wire-pod
 
 WORKDIR /wire-pod
 
-CMD sudo STT=vosk ./setup.sh
 
-WORKDIR /wire-pod/chipper
+# idk
+RUN sudo sh -c 'yes 3 | ./setup.sh'
 
-CMD sudo ./start.sh
+COPY <<EOF /wire-pod/chipper/source.sh
+export DEBUG_LOGGING=true
+EOF
+
+RUN sed -i 's#/usr/local/go/bin/go#go#g' /wire-pod/chipper/start.sh
+CMD sudo STT_SERVICE=whisper ./chipper/start.sh

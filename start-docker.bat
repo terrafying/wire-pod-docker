@@ -1,0 +1,1 @@
+docker run -it -p 8080:8080 -p 443:443 -p 8084:8084  --hostname=escapepod -p 80:80 wire-pod
